@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome - AI Misinformation Checker</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      /* 🌈 Pastel gradient background with animation */
+      background: linear-gradient(135deg, #ffd6e0, #e0f7fa, #d1ffd6, #fff7d6);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #00bfa5; /* teal accent on pastel */
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.2rem;
+      color: #555; /* soft gray text */
+      margin-bottom: 2rem;
+    }
+    button {
+      padding: 14px 32px;
+      font-size: 16px;
+      background: linear-gradient(135deg, #ffd6e0, #d1ffd6); /* pastel button gradient */
+      color: #333;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #d1ffd6, #ffd6e0);
+      transform: scale(1.08);
+    }
+    .logo-container img {
+      max-width: 200px;
+      margin-bottom: 20px;
+      border-radius: 14px;
+      box-shadow: 0 0 18px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="image/ai.jpg" alt="TheAiHacks">
+  </div>
+  <h1>Welcome to AI-Powered Misinformation Checker</h1>
+  <p>Check the credibility of news headlines and links with AI!</p>
+  <button onclick="enterApp()">Enter</button>
+
+  <script>
+    function enterApp() {
+      window.location.href = "checker.html"; // Opens your main checker page
+    }
+  </script>
+</body>
+</html>

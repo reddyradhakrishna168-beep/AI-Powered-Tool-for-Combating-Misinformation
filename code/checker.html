@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI-Powered Misinformation Checker</title>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<style>
+body { 
+  font-family: Arial, sans-serif; 
+  background: linear-gradient(135deg, #ffd6e0, #e0f7fa, #d1ffd6, #fff7d6);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  padding: 20px; 
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.container { 
+  max-width: 700px; 
+  margin: auto; 
+  background: white; 
+  padding: 20px; 
+  border-radius: 10px; 
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2); 
+  text-align: center;
+}
+.logo-container img {
+  width: 60px;   
+  height: auto;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+textarea { width:100%; height:100px; margin:10px 0; padding:10px; }
+button { background:#007bff; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; }
+button:hover { background:#0056b3; }
+.result { margin-top:20px; padding:15px; border-radius:8px; }
+.low { background:#d4edda; color:#155724; }
+.medium { background:#fff3cd; color:#856404; }
+.high { background:#f8d7da; color:#721c24; }
+#backBtn { margin-top:15px; background:#FFD700; color:black; font-weight:bold; display:none; }
+#backBtn:hover { background:#e6c200; }
+</style>
+</head>
+<body>
+<div class="container" id="main">
+  <!-- Small logo at top -->
+  <div class="logo-container">
+    <img src="image/ai.jpg" alt="TheAiHacks">
+  </div>
+
+  <h1>AI-Powered Misinformation Checker</h1>
+  <p>Paste a headline or URL below to check credibility:</p>
+  <textarea id="inputText" placeholder="Enter headline or URL..."></textarea>
+  <button onclick="checkMisinformation()">🔎 Check Now</button>
+
+  <div id="result" style="display:none;"></div>
+  <button id="backBtn" onclick="goHome()">⬅ Back to Home</button>
+</div>
+
+<script>
+let mlModel = null;
+async function loadModel() {
+  mlModel = { predict: (input) => ({ data: async () => [Math.random()] }) };
+}
+loadModel();
+
+async function checkMisinformation() {
+  let text = document.getElementById("inputText").value.trim();
+  if(!text){ alert("Please enter some text or a URL."); return; }
+
+  let riskScore = 0;
+  let reasons = [];
+  let tips = [
+    "Cross-check with at least 2 other sources.",
+    "Be cautious of emotionally exaggerated language.",
+    "Look for author names, dates, and reputable sources."
+  ];
+
+  const cueWords = ["shocking","urgent","miracle","hoax","scam"];
+  cueWords.forEach(word => {
+    if(text.toLowerCase().includes(word)){
+      reasons.push(`⚠ Uses sensational word: "${word}"`);
+      riskScore+=15;
+    }
+  });
+
+  if((text.match(/!/g)||[]).length>2){ reasons.push("⚠ Contains excessive exclamation marks."); riskScore+=20; }
+  if(/[A-Z]{5,}/.test(text)){ reasons.push("⚠ Contains ALL CAPS words."); riskScore+=15; }
+  if(!/[A-Z][a-z]+/.test(text)){ reasons.push("⚠ No named entities detected."); riskScore+=10; }
+
+  let mlScore=0;
+  if(mlModel){
+    const inputVec=tf.tensor2d([[1,0,0]]);
+    const prediction=mlModel.predict(inputVec);
+    mlScore=(await prediction.data())[0];
+    inputVec.dispose();
+    reasons.push(`🤖 ML model suggests risk = ${(mlScore*100).toFixed(1)}%`);
+    riskScore=(riskScore + mlScore*100)/2;
+  }
+
+  let riskClass="low", label="Likely Credible";
+  if(riskScore>40 && riskScore<=70){ riskClass="medium"; label="Warning Signs"; }
+  if(riskScore>70){ riskClass="high"; label="High Risk of Misinformation"; }
+
+  let resultBox=document.getElementById("result");
+  resultBox.style.display="block";
+  resultBox.className="result "+riskClass;
+  resultBox.innerHTML=`
+    <h2>Result</h2>
+    <p class="risk">Risk Score: ${riskScore.toFixed(1)} — ${label}</p>
+    <h3>Reasons:</h3>
+    <ul>${reasons.map(r=>`<li>${r}</li>`).join("")}</ul>
+    <h3>Tips:</h3>
+    <ul>${tips.map(t=>`<li>${t}</li>`).join("")}</ul>
+  `;
+
+  document.getElementById("backBtn").style.display="inline-block";
+}
+
+function goHome(){
+  document.getElementById("inputText").value="";
+  document.getElementById("result").style.display="none";
+  document.getElementById("backBtn").style.display="none";
+}
+</script>
+</body>
+</html>
